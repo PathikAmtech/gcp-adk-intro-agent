@@ -2,14 +2,15 @@ import os
 
 from google.adk import Agent
 from google.adk.agents import SequentialAgent
-from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, SseServerParams
+from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StreamableHTTPConnectionParams
 
 import janitor.schemas as schemas
 import janitor.settings as settings
 import janitor.tools as tools
 
-MCP_SERVER_URL = os.getenv("MCP_SERVER_URL")
-
+mcp_toolset = MCPToolset(
+    connection_params=StreamableHTTPConnectionParams(url="https://mcp-server-pszgpylysa-uc.a.run.app")
+)
 
 resource_scanner_agent = Agent(
     name="resource_scanner_agent",
@@ -42,6 +43,8 @@ resource_monitor_agent = Agent(
     output_key="idle_resources",
 )
 
+
+
 resource_labeler_agent = Agent(
     name="resource_labeler_agent",
     model=settings.GEMINI_MODEL,
@@ -60,9 +63,7 @@ resource_labeler_agent = Agent(
     tools=[
         tools.get_current_date,
         tools.add_days_to_date,
-        MCPToolset(
-            connection_params=SseServerParams(url=MCP_SERVER_URL)
-        ),
+        mcp_toolset
     ],
 )
 
