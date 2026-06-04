@@ -1,5 +1,6 @@
 from google.adk import Agent
 from google.adk.agents import SequentialAgent
+from google.adk.agents.remote_agent import RemoteAgent
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StreamableHTTPConnectionParams
 
 import janitor.schemas as schemas
@@ -63,9 +64,14 @@ resource_labeler_agent = Agent(
     ],
 )
 
+resource_cleaner_agent = RemoteAgent(
+    name="resource_cleaner_agent",
+    agent_card_url="http://localhost:8081/.well-known/agent.json",
+)
+
 orchestrator_agent = SequentialAgent(
     name="orchestrator_agent",
-    sub_agents=[resource_scanner_agent, resource_monitor_agent, resource_labeler_agent],
+    sub_agents=[resource_scanner_agent, resource_monitor_agent, resource_labeler_agent, resource_cleaner_agent],
 )
 
 # The root_agent is the entry point for the user query.
