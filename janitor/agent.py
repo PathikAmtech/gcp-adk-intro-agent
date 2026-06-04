@@ -1,5 +1,3 @@
-import os
-
 from google.adk import Agent
 from google.adk.agents import SequentialAgent
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StreamableHTTPConnectionParams
@@ -42,8 +40,6 @@ resource_monitor_agent = Agent(
     output_schema=schemas.VMStatsList,
     output_key="idle_resources",
 )
-
-
 
 resource_labeler_agent = Agent(
     name="resource_labeler_agent",
