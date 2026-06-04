@@ -7,7 +7,7 @@ import janitor.settings as settings
 import janitor.tools as tools
 
 mcp_toolset = MCPToolset(
-    connection_params=StreamableHTTPConnectionParams(url="https://mcp-server-pszgpylysa-uc.a.run.app")
+    connection_params=StreamableHTTPConnectionParams(url="http://localhost:8080")
 )
 
 resource_scanner_agent = Agent(
