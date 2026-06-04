@@ -11,7 +11,8 @@ resource_scanner_agent = Agent(
     model=settings.GEMINI_MODEL,
     instruction="""
     You are a Cloud Resource Scanner.
-    Return *all* resources.
+    Call the get_compute_instances_list tool and populate the vm_instances field
+    with EVERY VM the tool returns. Do not leave vm_instances empty.
     """,
     tools=[tools.get_compute_instances_list],
     output_schema=schemas.VMInstanceList,
