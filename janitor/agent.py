@@ -1,9 +1,14 @@
+import os
+
 from google.adk import Agent
 from google.adk.agents import SequentialAgent
+from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, SseServerParams
 
 import janitor.schemas as schemas
 import janitor.settings as settings
 import janitor.tools as tools
+
+MCP_SERVER_URL = os.getenv("MCP_SERVER_URL")
 
 
 resource_scanner_agent = Agent(
@@ -37,9 +42,33 @@ resource_monitor_agent = Agent(
     output_key="idle_resources",
 )
 
+resource_labeler_agent = Agent(
+    name="resource_labeler_agent",
+    model=settings.GEMINI_MODEL,
+    instruction="""
+    You are a Cloud Resource Labeler. Apply lifecycle labels to idle VM instances.
+
+    The idle VMs to process are: {idle_resources}
+
+    For each VM:
+    1. Call get_current_date to get today's date.
+    2. Call add_days_to_date with that date and 7 to compute the scheduled date.
+    3. Use the MCP tools to check if the VM already has a 'janitor-scheduled' label.
+    4. If the VM does NOT have a 'janitor-scheduled' label, apply it using the scheduled date as the value.
+    5. If the VM already has a 'janitor-scheduled' label, leave it completely unchanged.
+    """,
+    tools=[
+        tools.get_current_date,
+        tools.add_days_to_date,
+        MCPToolset(
+            connection_params=SseServerParams(url=MCP_SERVER_URL)
+        ),
+    ],
+)
+
 orchestrator_agent = SequentialAgent(
     name="orchestrator_agent",
-    sub_agents=[resource_scanner_agent, resource_monitor_agent],
+    sub_agents=[resource_scanner_agent, resource_monitor_agent, resource_labeler_agent],
 )
 
 # The root_agent is the entry point for the user query.
