@@ -1,6 +1,6 @@
 from google.adk import Agent
 from google.adk.agents import SequentialAgent
-from google.adk.agents.remote_agent import RemoteAgent
+from google.adk.agents.remote_a2a_agent import RemoteA2aAgent
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StreamableHTTPConnectionParams
 
 import janitor.schemas as schemas
@@ -64,9 +64,9 @@ resource_labeler_agent = Agent(
     ],
 )
 
-resource_cleaner_agent = RemoteAgent(
+resource_cleaner_agent = RemoteA2aAgent(
     name="resource_cleaner_agent",
-    agent_card_url="http://localhost:8081/.well-known/agent.json",
+    agent_card="http://localhost:8081/.well-known/agent.json",
 )
 
 orchestrator_agent = SequentialAgent(
